@@ -2,7 +2,8 @@ import React, { ChangeEvent, FC, FormEvent, useCallback, useState } from "react"
 import styles from './Sidebar.module.scss'
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { resetStatus, selectSearchStatus } from "../../store/slices/searchSlice";
-import { findUsersThunk, selectFoundUsers } from "../../store/slices/usersSlice";
+import { findUsersThunk, selectFoundUsers, setCurrentuserThunk } from "../../store/slices/usersSlice";
+import Image from '../../assets/images/image-placeholder.jpg'
 
 export const Sidebar = () => {
     const searchStatus = useAppSelector(selectSearchStatus)
@@ -77,14 +78,25 @@ const UsersNotFound = () => {
 }
 
 const Cards = () => {
+    const dispatch = useAppDispatch()
     const foundUsers = useAppSelector(selectFoundUsers)
+
+    const handleListItemOnClick = useCallback((id: number) => {
+        dispatch(setCurrentuserThunk(id))
+    }, [dispatch])
 
     return (
         <ul className={styles.cards}>
             {foundUsers.map(user => (
-                <li key={user.id} className={styles.card}>
+                <li 
+                    key={user.id} 
+                    className={styles.card}
+                    onClick={() => {
+                        handleListItemOnClick(user.id)               
+                    }}
+                >
                     <figure className={styles.figure}>
-                        <img className={styles.image} src="" alt="" />
+                        <img className={styles.image} src={Image} alt={user.name} />
                     </figure>
                     <div className={styles.description}>
                         <h4 className={styles.descriptionTitle}>{user.username}</h4>

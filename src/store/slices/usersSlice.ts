@@ -75,13 +75,22 @@ export const findUsersThunk = (searchString: string) =>
                         if (userPayload.status === 'fulfilled') {
                             foundUsers.push(userPayload.value as User)
                         }
-                    })
-                    console.log(foundUsers);
-                    
+                    })                    
                     dispatch(setFoundUsers(foundUsers))
                     dispatch(setSearchStatus('found'))
                 })
         } else {
             dispatch(setSearchStatus('notfound'))
         }
+    }
+
+export const setCurrentuserThunk = (id: number) =>
+    async (dispatch: AppDispatch, getState: GetState) => {
+        const foundUsers = getState().users.foundUsers
+        foundUsers.forEach(user => {
+            if (user.id === id) {
+                dispatch(setUser(user))
+                return
+            }
+        })
     }

@@ -1,13 +1,15 @@
 import React from "react";
 import styles from './Content.module.scss'
 import { useAppSelector } from "../../store/hooks";
-import { selectSearchStatus } from "../../store/slices/searchSlice";
+import Image from '../../assets/images/image-placeholder.jpg'
+import { selectUser } from "../../store/slices/usersSlice";
 
 export const Content = () => {
-    const searchStatus = useAppSelector(selectSearchStatus)
+    const user = useAppSelector(selectUser)
+
     return (
         <main className={styles.content}>
-            {   searchStatus === 'found' ? 
+            {   user ? 
                 <UserProfile/> :
                 <ProfilePlaceholder/>
             }
@@ -24,28 +26,31 @@ const ProfilePlaceholder = () => {
 }
 
 const UserProfile = () => {
+    const user = useAppSelector(selectUser)
+
     return (
         <div className={styles.userProfile}>
             <figure className={styles.figure}>
-                <img className={styles.image} src="/images/я.jpg" alt="" />
+                <img className={styles.image} src={Image} alt={user?.name} />
             </figure>
             <div className={styles.profile}>
-                <div className={styles.username}>Name Name</div>
+                <div className={styles.username}>{user?.name}</div>
                 <div className={styles.details}>
                     <span className={styles.label}>email: </span>
-                    <a className={styles.contacts} href="mailto:meves.sergey@gmail.com">meves.sergey@gmail.com</a>
+                    <a className={styles.contacts} href={`mailto: ${user?.email}`}>{user?.email}</a>
                 </div>
                 <div className={styles.details}> 
                     <span className={styles.label}>phone: </span>
-                    <a className={styles.contacts} href="tel:+7-918-253-8109">+7-918-253-8109</a>
+                    <a className={styles.contacts} href={`tel: ${user?.phone}`}>{user?.phone}</a>
                 </div>
                 <div className={styles.aboutTitle}>О себе:</div>
                 <p className={styles.aboutDescription}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation 
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in 
-                    voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non 
-                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    Heelo!
+                    I am ${user?.username}. My full name is ${user?.name}.
+                    I live in ${user?.address.city} on ${user?.address.street}.
+                    I locate at ${user?.address.geo.lat} northern latitude and ${user?.address.geo.lng} west longitude.
+                    I work at company ${user?.company.name}. Our company ${user?.company.catchPhrase} and ${user?.company.bs}.
+                    Good luck.
                 </p>
             </div>
         </div>
