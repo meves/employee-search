@@ -3,7 +3,7 @@ import styles from './Content.module.scss'
 
 export const Content = () => {
     return (
-        <main className={styles.main}>
+        <main className={styles.content}>
             Content
         </main>
     )

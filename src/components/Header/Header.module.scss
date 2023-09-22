@@ -1,3 +1,23 @@
 .header {
-    
+    grid-area: header;
+    padding-top: 46px;
+    padding-bottom: 30px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    .logo {
+        font-weight: 700;
+        font-size: 32px;
+        line-height: 39.01px;
+        color: var(--header-title);
+    }
+
+    .user {
+        margin-left: auto;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 19.5px;
+        color: var(--subtitle);
+    }
 }

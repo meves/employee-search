@@ -1,0 +1,5 @@
+.home {
+    display: grid;
+    grid-template-areas: "header header"
+                        "sidebar content";
+}

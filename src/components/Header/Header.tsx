@@ -4,7 +4,8 @@ import styles from './Header.module.scss'
 export const Header = () => {
     return (
         <header className={styles.header}>
-            Header
+            <div className={styles.logo}>Жилфонд</div>
+            <div className={styles.user}>Пользователь</div>
         </header>
     )
 }

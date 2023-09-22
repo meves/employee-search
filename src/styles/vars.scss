@@ -1,8 +1,14 @@
 :root {
     --white: #fff;
     --red: #E31F24;
+    --black: #000;
+    --light-black: #333;
+    --grey: #76787D;
 
     --app-font: 'Montserrat', sans-serif;
     --app-background: var(--white);
     --header-title: var(--red);
+    --title: var(--black);
+    --subtitle: var(--light-black);
+    --text: var(--grey);
 }
