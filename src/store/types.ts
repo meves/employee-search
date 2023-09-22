@@ -1,0 +1,1 @@
+export type SearchStatus = 'start' | 'found' | 'notfound'

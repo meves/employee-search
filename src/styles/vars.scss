@@ -1,9 +1,12 @@
 :root {
     --white: #fff;
+    --light: #e9ecef;
+    --light2: #e0e0e0;
     --red: #E31F24;
     --black: #000;
     --light-black: #333;
     --grey: #76787D;
+
 
     --app-font: 'Montserrat', sans-serif;
     --app-background: var(--white);
@@ -11,4 +14,6 @@
     --title: var(--black);
     --subtitle: var(--light-black);
     --text: var(--grey);
+    --input-border: var(--light);
+    --figure-border: var(--light2);
 }

@@ -1,4 +1,94 @@
 .sidebar {
     grid-area: sidebar;
     padding: 27px 31px 0 20px;
+
+    .title {
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22.4px;
+        color: var(--subtitle);
+    }
+
+    .searchText {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 17.07px;
+        color: var(--text);
+    }
+
+    .searchInput {
+        width: 240px;
+        height: 46px;
+        margin-top: 22px;
+        margin-bottom: 22px;
+        border: 1.5px solid var(--input-border);
+        border-radius: 8px;
+        padding: 16px;
+        outline: none;
+    }
+
+    .searchButton {
+        margin-top: 10px;
+        border: none;
+        
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    .notFoundText {
+        margin-top: 10px;
+    }
+
+    .cards {
+        width: 240px;
+        list-style-type: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 18px;
+
+        .card {
+            width: 240px;
+            height: 70px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 18px;
+            
+            .figure {
+                width: 70px;
+                height: 70px;
+                border: 1px solid var(--figure-border);
+                border-top-left-radius: 10px;
+                border-bottom-left-radius: 10px;
+
+                .image {
+                    
+                }
+            }
+
+            .description {
+                padding: 15px 34px 18px 15px;
+
+                .descriptionTitle {
+                    margin-bottom: 5px;
+                    font-weight: 600;
+                    font-size: 14px;
+                    line-height: 17.07px;
+                    color: var(--subtitle);
+                }
+
+                .descriptionText {
+                    font-weight: 400;
+                    font-size: 14px;
+                    line-height: 17.07px;
+                    color: var(--text);
+                }
+            }
+        }
+    }
+
 }
