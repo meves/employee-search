@@ -27,4 +27,4 @@ export const {
 
 export default searchSlice.reducer
 
-export const selectsearchStatus = (state: RootState) => state.search.searchStatus
+export const selectSearchStatus = (state: RootState) => state.search.searchStatus

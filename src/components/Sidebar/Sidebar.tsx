@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import styles from './Sidebar.module.scss'
 import { useAppSelector } from "../../store/hooks";
-import { selectsearchStatus } from "../../store/slices/searchSlice";
+import { selectSearchStatus } from "../../store/slices/searchSlice";
 
 const cards = [
     {
@@ -25,7 +25,7 @@ const cards = [
 ]
 
 export const Sidebar = () => {
-    const searchStatus = useAppSelector(selectsearchStatus)
+    const searchStatus = useAppSelector(selectSearchStatus)
 
     return (
         <aside className={styles.sidebar}>
