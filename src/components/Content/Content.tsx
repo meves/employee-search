@@ -11,7 +11,7 @@ export const Content = () => {
                 <UserProfile/> :
                 <ProfilePlaceholder/>
             }
-        </main>
+        </main> 
     )
 }
 

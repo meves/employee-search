@@ -16,12 +16,16 @@ export const searchSlice = createSlice({
     reducers: {
         setSearchStatus: (state, action: PayloadAction<SearchStatus>) => {
             state.searchStatus = action.payload
+        },
+        resetStatus: (state, action: PayloadAction) => {
+            state.searchStatus = 'start'
         }
     }
 })
 
 export const {
-    setSearchStatus
+    setSearchStatus,
+    resetStatus
 
 } = searchSlice.actions
 

@@ -1,36 +1,16 @@
-import React, { FC } from "react";
+import React, { ChangeEvent, FC, FormEvent, useCallback, useState } from "react";
 import styles from './Sidebar.module.scss'
-import { useAppSelector } from "../../store/hooks";
-import { selectSearchStatus } from "../../store/slices/searchSlice";
-
-const cards = [
-    {
-        id: 1,
-        name: "Bret",
-        email: 'Sincere@april.biz',
-        imageSrc: ''
-    },
-    {
-        id: 2,
-        name: "Bret",
-        email: 'Sincere@april.biz',
-        imageSrc: ''
-    },
-    {
-        id: 3,
-        name: "Bret",
-        email: 'Sincere@april.biz',
-        imageSrc: ''
-    }
-]
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { resetStatus, selectSearchStatus } from "../../store/slices/searchSlice";
+import { findUsersThunk, selectFoundUsers } from "../../store/slices/usersSlice";
 
 export const Sidebar = () => {
     const searchStatus = useAppSelector(selectSearchStatus)
-
+    
     return (
         <aside className={styles.sidebar}>
             <Title titleText="Поиск сотрудников" />
-            <SearchInput/>
+            <SearchForm/>                
             <Title titleText="Результаты" />
             {   searchStatus === 'start' ? <SearchButton/> :
                 searchStatus === 'found' ? <Cards/> :
@@ -50,12 +30,37 @@ const Title: FC<TitleProps>  = ({titleText}) => {
     )
 }
 
-const SearchInput = () => {
+const SearchForm = () => {
+    const dispatch = useAppDispatch()
+
+    const [value, setValue] = useState('')
+
+    const handleOnChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        const value = event.currentTarget.value
+        setValue(value)
+        if (!value) {
+            dispatch(resetStatus())
+        }
+    }, [dispatch])
+
+    const handleSubmitForm = useCallback((event: FormEvent) => {
+        event.preventDefault()
+        if (value) {
+            dispatch(findUsersThunk(value))
+        }     
+        
+    }, [value, dispatch])
+
     return (
-        <input 
-            className={`${styles.searchInput} ${styles.searchText}`}
-            type="text" 
-        />
+        <form onSubmit={handleSubmitForm}>
+            <input 
+                className={`${styles.searchInput} ${styles.searchText}`}
+                type="text"
+                placeholder="Введите Id или имя"
+                value={value}
+                onChange={handleOnChange}
+            />
+        </form>
     )
 }
 
@@ -72,16 +77,18 @@ const UsersNotFound = () => {
 }
 
 const Cards = () => {
+    const foundUsers = useAppSelector(selectFoundUsers)
+
     return (
         <ul className={styles.cards}>
-            {cards.map(card => (
-                <li key={card.id} className={styles.card}>
+            {foundUsers.map(user => (
+                <li key={user.id} className={styles.card}>
                     <figure className={styles.figure}>
-                        <img className={styles.image} src={card.imageSrc} alt={card.name} />
+                        <img className={styles.image} src="" alt="" />
                     </figure>
                     <div className={styles.description}>
-                        <h4 className={styles.descriptionTitle}>{card.name}</h4>
-                        <p className={styles.descriptionText}>{card.email}</p>
+                        <h4 className={styles.descriptionTitle}>{user.username}</h4>
+                        <p className={styles.descriptionText}>{user.email}</p>
                     </div>
                 </li>
             ))}
