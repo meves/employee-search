@@ -7,10 +7,11 @@ import { getUsersThunk } from '../store/slices/usersSlice';
 const App = () => {
   const dispatch = useAppDispatch()
   const [loading, setLoading] = useState(false)
-
+  
   useEffect(() => {
     setLoading(true)
-    dispatch(getUsersThunk()).then(() => setLoading(false))
+    dispatch(getUsersThunk())
+      .then(() => setLoading(false))
   }, [dispatch])
 
   if (loading) {

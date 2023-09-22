@@ -3,16 +3,18 @@ import styles from './Content.module.scss'
 import { useAppSelector } from "../../store/hooks";
 import Image from '../../assets/images/image-placeholder.jpg'
 import { selectUser } from "../../store/slices/usersSlice";
+import { selectLoading } from "../../store/slices/uiSlice";
+import { Preloader } from "../shared/Preloader/Preloader";
 
 export const Content = () => {
     const user = useAppSelector(selectUser)
+    const loading = useAppSelector(selectLoading)
 
     return (
         <main className={styles.content}>
-            {   user ? 
-                <UserProfile/> :
-                <ProfilePlaceholder/>
-            }
+            { loading ? <Preloader/> : null }
+            
+            { user ? <UserProfile/> :<ProfilePlaceholder/> }
         </main> 
     )
 }

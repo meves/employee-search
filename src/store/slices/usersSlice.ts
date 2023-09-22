@@ -5,6 +5,7 @@ import { usersApi } from "../../api/users-api"
 import { ResultCodes } from "../../api/http-codes"
 import { setSearchStatus } from "./searchSlice"
 import { getUsersFromServer, getUsersIds, getUsersNames } from "../libs/utils"
+import { resetLoading, setLoading } from "./uiSlice"
 
 interface SearchState {
     user: User | null
@@ -25,6 +26,9 @@ export const usersSlice = createSlice({
         setUser: (state, action: PayloadAction<User>) => {
             state.user = action.payload
         },
+        resetUser: (state, action: PayloadAction) => {
+            state.user = null
+        },
         setUsers: (state, action: PayloadAction<User[]>) => {
             state.users = action.payload
         },
@@ -36,6 +40,7 @@ export const usersSlice = createSlice({
 
 export const {
     setUser,
+    resetUser,
     setUsers,
     setFoundUsers
 
@@ -64,6 +69,7 @@ async (dispatch: AppDispatch) => {
 
 export const findUsersThunk = (searchString: string) =>
     async (dispatch: AppDispatch, getState: GetState) => {
+        dispatch(setLoading())
         const usersNames = getUsersNames(searchString)
         const ids = getUsersIds(getState().users.users, usersNames)        
         if (ids.length) {
@@ -77,15 +83,18 @@ export const findUsersThunk = (searchString: string) =>
                         }
                     })                    
                     dispatch(setFoundUsers(foundUsers))
-                    dispatch(setSearchStatus('found'))
+                    return dispatch(setSearchStatus('found'))
                 })
         } else {
             dispatch(setSearchStatus('notfound'))
+
         }
+        dispatch(resetLoading())
     }
 
 export const setCurrentuserThunk = (id: number) =>
     async (dispatch: AppDispatch, getState: GetState) => {
+        dispatch(setLoading())
         const foundUsers = getState().users.foundUsers
         foundUsers.forEach(user => {
             if (user.id === id) {
@@ -93,4 +102,5 @@ export const setCurrentuserThunk = (id: number) =>
                 return
             }
         })
+        dispatch(resetLoading())
     }

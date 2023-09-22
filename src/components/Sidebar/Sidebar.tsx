@@ -1,18 +1,24 @@
 import React, { ChangeEvent, FC, FormEvent, useCallback, useState } from "react";
 import styles from './Sidebar.module.scss'
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { resetStatus, selectSearchStatus } from "../../store/slices/searchSlice";
+import { resetSearchResultsThunk, selectSearchStatus } from "../../store/slices/searchSlice";
 import { findUsersThunk, selectFoundUsers, setCurrentuserThunk } from "../../store/slices/usersSlice";
 import Image from '../../assets/images/image-placeholder.jpg'
+import { selectLoading } from "../../store/slices/uiSlice";
+import { Preloader } from "../shared/Preloader/Preloader";
 
 export const Sidebar = () => {
     const searchStatus = useAppSelector(selectSearchStatus)
+    const loading = useAppSelector(selectLoading)
     
     return (
         <aside className={styles.sidebar}>
             <Title titleText="Поиск сотрудников" />
-            <SearchForm/>                
+            <SearchForm/>
             <Title titleText="Результаты" />
+
+            { loading ? <Preloader/> : null }
+            
             {   searchStatus === 'start' ? <SearchButton/> :
                 searchStatus === 'found' ? <Cards/> :
                 searchStatus === 'notfound' ? <UsersNotFound/> : null 
@@ -40,16 +46,15 @@ const SearchForm = () => {
         const value = event.currentTarget.value
         setValue(value)
         if (!value) {
-            dispatch(resetStatus())
+            dispatch(resetSearchResultsThunk())
         }
     }, [dispatch])
 
     const handleSubmitForm = useCallback((event: FormEvent) => {
-        event.preventDefault()
+        event.preventDefault()        
         if (value) {
             dispatch(findUsersThunk(value))
-        }     
-        
+        }        
     }, [value, dispatch])
 
     return (
@@ -80,6 +85,7 @@ const UsersNotFound = () => {
 const Cards = () => {
     const dispatch = useAppDispatch()
     const foundUsers = useAppSelector(selectFoundUsers)
+    
 
     const handleListItemOnClick = useCallback((id: number) => {
         dispatch(setCurrentuserThunk(id))
@@ -103,7 +109,7 @@ const Cards = () => {
                         <p className={styles.descriptionText}>{user.email}</p>
                     </div>
                 </li>
-            ))}
+            ))}            
         </ul>
     )
 }
