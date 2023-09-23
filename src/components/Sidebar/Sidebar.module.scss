@@ -27,6 +27,12 @@
         outline: none;
     }
 
+    .error {
+        color: var(--red);
+        margin-top: -20px;
+        margin-bottom: 20px;
+    }
+
     .searchButton {
         margin-top: 10px;
         border: none;

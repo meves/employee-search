@@ -4,8 +4,8 @@ import { User } from "../types"
 import { usersApi } from "../../api/users-api"
 import { ResultCodes } from "../../api/http-codes"
 import { setSearchStatus } from "./searchSlice"
-import { getUsersFromServer, getUsersIds, getUsersNames } from "../libs/utils"
-import { resetLoading, setLoading } from "./uiSlice"
+import { getUsersIdsBySearchString, getFoundUsers } from "../libs/utils"
+import { resetProfileLoading, resetUsersLoading, setProfileLoading, setUsersLoading } from "./uiSlice"
 
 interface SearchState {
     user: User | null
@@ -53,10 +53,12 @@ export const selectFoundUsers = (state: RootState) => state.users.foundUsers
 
 export const getUserThunk = (id: string) =>
     async (dispatch: AppDispatch) => {
-        const response = await usersApi.getUser(id)
+        const response = await usersApi.getUser(String(id))
         if (response.status === ResultCodes.SUCCESS_200) {
-            dispatch(setUser(response.data))
-        }
+            return response.data
+        } else {
+            return new Error('Error')
+        }        
     }
 
 export const getUsersThunk = () =>
@@ -64,43 +66,36 @@ async (dispatch: AppDispatch) => {
     const response = await usersApi.getUsers()
     if (response.status === ResultCodes.SUCCESS_200) {
         dispatch(setUsers(response.data))
-    }
+    } else if (response.status === ResultCodes.BAD_REQUEST_400) {
+        return Promise.reject('Введены неверные данные')
+    } else if (response.status === ResultCodes.NOT_FOUND_404) {
+        return Promise.reject('По вашему запросу ничего не найдено')
+    } else if (response.status === ResultCodes.SERVER_ERROR_500) {
+        return Promise.reject('Ошибка сервера')
+    }    
 }
 
 export const findUsersThunk = (searchString: string) =>
     async (dispatch: AppDispatch, getState: GetState) => {
-        dispatch(setLoading())
-        const usersNames = getUsersNames(searchString)
-        const ids = getUsersIds(getState().users.users, usersNames)        
+        dispatch(setUsersLoading())
+        const ids = getUsersIdsBySearchString(getState().users.users, searchString)
         if (ids.length) {
-            const users = await getUsersFromServer(ids)
-            Promise.allSettled(users)
-                .then((users) => {
-                    const foundUsers: User[] = []
-                    users.forEach(userPayload => {
-                        if (userPayload.status === 'fulfilled') {
-                            foundUsers.push(userPayload.value as User)
-                        }
-                    })                    
-                    dispatch(setFoundUsers(foundUsers))
-                    return dispatch(setSearchStatus('found'))
-                })
+            dispatch(setFoundUsers(await getFoundUsers(ids, dispatch)))
+            dispatch(setSearchStatus('found'))
         } else {
             dispatch(setSearchStatus('notfound'))
-
         }
-        dispatch(resetLoading())
+        dispatch(resetUsersLoading())
     }
 
-export const setCurrentuserThunk = (id: number) =>
+export const setCurrentUserThunk = (id: number) =>
     async (dispatch: AppDispatch, getState: GetState) => {
-        dispatch(setLoading())
+        dispatch(setProfileLoading())
         const foundUsers = getState().users.foundUsers
         foundUsers.forEach(user => {
             if (user.id === id) {
                 dispatch(setUser(user))
-                return
             }
         })
-        dispatch(resetLoading())
+        dispatch(resetProfileLoading())
     }

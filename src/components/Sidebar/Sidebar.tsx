@@ -2,23 +2,22 @@ import React, { ChangeEvent, FC, FormEvent, useCallback, useState } from "react"
 import styles from './Sidebar.module.scss'
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { resetSearchResultsThunk, selectSearchStatus } from "../../store/slices/searchSlice";
-import { findUsersThunk, selectFoundUsers, setCurrentuserThunk } from "../../store/slices/usersSlice";
+import { findUsersThunk, getUsersThunk, selectFoundUsers, setCurrentUserThunk } from "../../store/slices/usersSlice";
 import Image from '../../assets/images/image-placeholder.jpg'
-import { selectLoading } from "../../store/slices/uiSlice";
 import { Preloader } from "../shared/Preloader/Preloader";
+import { selectUsersLoading } from "../../store/slices/uiSlice";
+import { validateInput } from "../libs/validators";
 
 export const Sidebar = () => {
     const searchStatus = useAppSelector(selectSearchStatus)
-    const loading = useAppSelector(selectLoading)
-    
+    const usersLoading = useAppSelector(selectUsersLoading)
+
     return (
         <aside className={styles.sidebar}>
             <Title titleText="Поиск сотрудников" />
             <SearchForm/>
             <Title titleText="Результаты" />
-
-            { loading ? <Preloader/> : null }
-            
+            {usersLoading ? <Preloader/> : null}
             {   searchStatus === 'start' ? <SearchButton/> :
                 searchStatus === 'found' ? <Cards/> :
                 searchStatus === 'notfound' ? <UsersNotFound/> : null 
@@ -41,21 +40,34 @@ const SearchForm = () => {
     const dispatch = useAppDispatch()
 
     const [value, setValue] = useState('')
+    const [error, setError] = useState('')
 
     const handleOnChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+        setError('')
         const value = event.currentTarget.value
+        const isValid = validateInput(value)
         setValue(value)
-        if (!value) {
-            dispatch(resetSearchResultsThunk())
+        if(isValid && value) {
+            dispatch(resetSearchResultsThunk())            
+        } else if (!value) {
+            setError('Поле не должно быть пустым')
+        } else if (!isValid) {
+            setError('неверный ввод')
         }
     }, [dispatch])
 
     const handleSubmitForm = useCallback((event: FormEvent) => {
         event.preventDefault()        
-        if (value) {
-            dispatch(findUsersThunk(value))
+        if (value.trim() && !error) {
+            dispatch(getUsersThunk())
+            .then(() => {
+                dispatch(findUsersThunk(value))
+            })
+            .catch(error => {
+                setError(error)
+            })
         }        
-    }, [value, dispatch])
+    }, [value, dispatch, error])
 
     return (
         <form onSubmit={handleSubmitForm}>
@@ -66,6 +78,7 @@ const SearchForm = () => {
                 value={value}
                 onChange={handleOnChange}
             />
+            { error ? <div className={styles.error}>{error}</div> : null }
         </form>
     )
 }
@@ -88,7 +101,7 @@ const Cards = () => {
     
 
     const handleListItemOnClick = useCallback((id: number) => {
-        dispatch(setCurrentuserThunk(id))
+        dispatch(setCurrentUserThunk(id))
     }, [dispatch])
 
     return (

@@ -1,6 +1,10 @@
-import { ResultCodes } from "../../api/http-codes"
-import { usersApi } from "../../api/users-api"
+import { AppDispatch } from "../redux-store"
+import { getUserThunk } from "../slices/usersSlice"
 import { User } from "../types"
+
+export const getUsersIdsBySearchString = (users: User[], searchString: string) => {
+    return getUsersIds(users, getUsersNames(searchString))
+}
 
 export const getUsersNames = (searchString: string) => {
     return searchString.split(',').map(userName => userName.trim())
@@ -15,15 +19,23 @@ export const getUsersIds = (users: User[], usersNames: string[]) => {
             }
         })
     })
-
+    
     return ids
 }
 
-export const getUsersFromServer = async (ids: number[]) => {
-    return ids.map(id => new Promise(async (resolve) => {
-        const response = await usersApi.getUser(String(id))
-        if (response.status === ResultCodes.SUCCESS_200) {
-            resolve(response.data)
-        }
-    }))
+export const getFoundUsers = async (ids: number[], dispatch: AppDispatch) => {    
+    const foundUsers: User[] = []
+    await Promise.allSettled(requsetUsers(ids, dispatch))
+    .then((results) => {
+        results.forEach(payload => {
+            if (payload.status === 'fulfilled') {
+                foundUsers.push(payload.value as User)
+            }
+        })                    
+    })
+    return foundUsers
+}
+
+export const requsetUsers = (ids: number[], dispatch: AppDispatch) => {
+    return ids.map(id => dispatch(getUserThunk(String(id))))
 }

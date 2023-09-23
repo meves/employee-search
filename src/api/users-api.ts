@@ -17,7 +17,7 @@ export const usersApi = {
         try {
             response = await instance.get<User[]>(`users`)
         } catch (error: any) {
-            response = error.response
+            response = error.response            
         }
         return response
     }
