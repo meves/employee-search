@@ -4,7 +4,7 @@ import { User } from "../types"
 import { usersApi } from "../../api/users-api"
 import { ResultCodes } from "../../api/http-codes"
 import { setSearchStatus } from "./searchSlice"
-import { getUsersIdsBySearchString, getFoundUsers } from "../libs/utils"
+import { getUsersIdsBySearchString, getFoundUsers, processResponseStatus } from "../libs/utils"
 import { resetProfileLoading, resetUsersLoading, setProfileLoading, setUsersLoading } from "./uiSlice"
 
 interface SearchState {
@@ -57,8 +57,8 @@ export const getUserThunk = (id: string) =>
         if (response.status === ResultCodes.SUCCESS_200) {
             return response.data
         } else {
-            return new Error('Error')
-        }        
+            return Promise.reject(processResponseStatus(response.status))
+        }       
     }
 
 export const getUsersThunk = () =>
@@ -66,12 +66,8 @@ async (dispatch: AppDispatch) => {
     const response = await usersApi.getUsers()
     if (response.status === ResultCodes.SUCCESS_200) {
         dispatch(setUsers(response.data))
-    } else if (response.status === ResultCodes.BAD_REQUEST_400) {
-        return Promise.reject('Введены неверные данные')
-    } else if (response.status === ResultCodes.NOT_FOUND_404) {
-        return Promise.reject('По вашему запросу ничего не найдено')
-    } else if (response.status === ResultCodes.SERVER_ERROR_500) {
-        return Promise.reject('Ошибка сервера')
+    } else {
+        return Promise.reject(processResponseStatus(response.status))
     }    
 }
 

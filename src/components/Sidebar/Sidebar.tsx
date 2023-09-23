@@ -47,18 +47,19 @@ const SearchForm = () => {
         const value = event.currentTarget.value
         const isValid = validateInput(value)
         setValue(value)
-        if(isValid && value) {
+        if (!value) {
             dispatch(resetSearchResultsThunk())            
-        } else if (!value) {
-            setError('Поле не должно быть пустым')
         } else if (!isValid) {
             setError('неверный ввод')
         }
     }, [dispatch])
 
     const handleSubmitForm = useCallback((event: FormEvent) => {
-        event.preventDefault()        
-        if (value.trim() && !error) {
+        event.preventDefault()
+        const trimmedValue = value.trim()
+        if (!trimmedValue) {
+            setError('Поле не должно быть пустым')
+        } else if (trimmedValue && !error) {
             dispatch(getUsersThunk())
             .then(() => {
                 dispatch(findUsersThunk(value))
@@ -66,7 +67,7 @@ const SearchForm = () => {
             .catch(error => {
                 setError(error)
             })
-        }        
+        }       
     }, [value, dispatch, error])
 
     return (
