@@ -2,18 +2,21 @@ import React from "react";
 import styles from './Content.module.scss'
 import { useAppSelector } from "../../store/hooks";
 import Image from '../../assets/images/image-placeholder.jpg'
-import { selectUser } from "../../store/slices/usersSlice";
+import { selectProfile } from "../../store/slices/usersSlice";
 import { Preloader } from "../shared/Preloader/Preloader";
 import { selectProfileLoading } from "../../store/slices/uiSlice";
+import { selectSearchStatus } from "../../store/slices/searchSlice";
 
 export const Content = () => {
-    const user = useAppSelector(selectUser)
+    const profile = useAppSelector(selectProfile)
     const profileLoading = useAppSelector(selectProfileLoading)
+    const searchStatus = useAppSelector(selectSearchStatus)
     
     return (
         <main className={styles.content}>
             { profileLoading ? <Preloader/> : null }
-            { user ? <UserProfile/> :<ProfilePlaceholder/> }
+            { (profile && searchStatus === 'found') ? <UserProfile/> : null }
+            { !profile ? <ProfilePlaceholder/> : null }
         </main> 
     )
 }
@@ -27,8 +30,8 @@ const ProfilePlaceholder = () => {
 }
 
 const UserProfile = () => {
-    const user = useAppSelector(selectUser)
-
+    const user = useAppSelector(selectProfile)
+        
     return (
         <div className={styles.userProfile}>
             <figure className={styles.figure}>

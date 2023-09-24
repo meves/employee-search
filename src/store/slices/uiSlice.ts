@@ -34,7 +34,7 @@ export const {
     setUsersLoading,
     resetUsersLoading,
     setProfileLoading,
-    resetProfileLoading
+    resetProfileLoading,
 
 } = uiSlice.actions
 

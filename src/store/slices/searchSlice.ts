@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { AppDispatch, RootState } from "../redux-store"
 import { SearchStatus } from "../types"
-import { resetUser } from "./usersSlice"
+import { resetProfile } from "./usersSlice"
 
 interface SearchState {
     searchStatus: SearchStatus
@@ -18,7 +18,7 @@ export const searchSlice = createSlice({
         setSearchStatus: (state, action: PayloadAction<SearchStatus>) => {
             state.searchStatus = action.payload
         },
-        resetStatus: (state, action: PayloadAction) => {
+        resetSearchStatus: (state, action: PayloadAction) => {
             state.searchStatus = 'start'
         }
     }
@@ -26,7 +26,7 @@ export const searchSlice = createSlice({
 
 export const {
     setSearchStatus,
-    resetStatus
+    resetSearchStatus
 
 } = searchSlice.actions
 
@@ -36,6 +36,6 @@ export const selectSearchStatus = (state: RootState) => state.search.searchStatu
 
 export const resetSearchResultsThunk = () =>
     async (dispatch: AppDispatch) => {
-        dispatch(resetStatus())
-        dispatch(resetUser())
+        dispatch(resetSearchStatus())
+        dispatch(resetProfile())
     }

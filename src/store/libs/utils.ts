@@ -1,6 +1,4 @@
 import { ResultCodes } from "../../api/http-codes"
-import { AppDispatch } from "../redux-store"
-import { getUserThunk } from "../slices/usersSlice"
 import { User } from "../types"
 import { ResponseErrors } from "./constatnts"
 
@@ -25,21 +23,14 @@ export const getUsersIds = (users: User[], usersNames: string[]) => {
     return ids
 }
 
-export const getFoundUsers = async (ids: number[], dispatch: AppDispatch) => {    
+export const getFoundUsers = (users: User[], ids: number[]) => {
     const foundUsers: User[] = []
-    await Promise.allSettled(requsetUsers(ids, dispatch))
-    .then((results) => {
-        results.forEach(payload => {
-            if (payload.status === 'fulfilled') {
-                foundUsers.push(payload.value as User)
-            }
-        })                    
+    users.forEach(user => {
+        if (ids.includes(user.id)) {
+            foundUsers.push(user)
+        }
     })
     return foundUsers
-}
-
-export const requsetUsers = (ids: number[], dispatch: AppDispatch) => {
-    return ids.map(id => dispatch(getUserThunk(String(id))))
 }
 
 export const processResponseStatus = (statusCoode: ResultCodes) => {

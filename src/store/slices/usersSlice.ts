@@ -1,20 +1,21 @@
+import { ResponseErrors } from './../libs/constatnts';
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { AppDispatch, GetState, RootState } from "../redux-store"
 import { User } from "../types"
 import { usersApi } from "../../api/users-api"
 import { ResultCodes } from "../../api/http-codes"
 import { setSearchStatus } from "./searchSlice"
-import { getUsersIdsBySearchString, getFoundUsers, processResponseStatus } from "../libs/utils"
-import { resetProfileLoading, resetUsersLoading, setProfileLoading, setUsersLoading } from "./uiSlice"
+import { getUsersIdsBySearchString, processResponseStatus, getFoundUsers } from "../libs/utils"
+import { setResponseError } from './errorSlice';
 
 interface SearchState {
-    user: User | null
+    profile: User | null
     users: User[]
     foundUsers: User[]
 }
 
 const initialState: SearchState = {
-    user: null,
+    profile: null,
     users: [],
     foundUsers: []
 }
@@ -23,11 +24,11 @@ export const usersSlice = createSlice({
     name: "users",
     initialState,
     reducers: {
-        setUser: (state, action: PayloadAction<User>) => {
-            state.user = action.payload
+        setProfile: (state, action: PayloadAction<User>) => {
+            state.profile = action.payload
         },
-        resetUser: (state, action: PayloadAction) => {
-            state.user = null
+        resetProfile: (state, action: PayloadAction) => {
+            state.profile = null
         },
         setUsers: (state, action: PayloadAction<User[]>) => {
             state.users = action.payload
@@ -39,8 +40,8 @@ export const usersSlice = createSlice({
 })
 
 export const {
-    setUser,
-    resetUser,
+    setProfile,
+    resetProfile,
     setUsers,
     setFoundUsers
 
@@ -48,18 +49,8 @@ export const {
 
 export default usersSlice.reducer
 
-export const selectUser = (state: RootState) => state.users.user
+export const selectProfile = (state: RootState) => state.users.profile
 export const selectFoundUsers = (state: RootState) => state.users.foundUsers
-
-export const getUserThunk = (id: string) =>
-    async (dispatch: AppDispatch) => {
-        const response = await usersApi.getUser(String(id))
-        if (response.status === ResultCodes.SUCCESS_200) {
-            return response.data
-        } else {
-            return Promise.reject(processResponseStatus(response.status))
-        }       
-    }
 
 export const getUsersThunk = () =>
 async (dispatch: AppDispatch) => {
@@ -68,30 +59,26 @@ async (dispatch: AppDispatch) => {
         dispatch(setUsers(response.data))
     } else {
         return Promise.reject(processResponseStatus(response.status))
-    }    
+    }
 }
 
 export const findUsersThunk = (searchString: string) =>
     async (dispatch: AppDispatch, getState: GetState) => {
-        dispatch(setUsersLoading())
         const ids = getUsersIdsBySearchString(getState().users.users, searchString)
         if (ids.length) {
-            dispatch(setFoundUsers(await getFoundUsers(ids, dispatch)))
+            dispatch(setFoundUsers(getFoundUsers(getState().users.users, ids)))            
             dispatch(setSearchStatus('found'))
         } else {
-            dispatch(setSearchStatus('notfound'))
+            dispatch(setResponseError(ResponseErrors.NOT_FOUND))
         }
-        dispatch(resetUsersLoading())
     }
 
-export const setCurrentUserThunk = (id: number) =>
+export const setUserProfileThunk = (id: number) =>
     async (dispatch: AppDispatch, getState: GetState) => {
-        dispatch(setProfileLoading())
         const foundUsers = getState().users.foundUsers
         foundUsers.forEach(user => {
             if (user.id === id) {
-                dispatch(setUser(user))
+                dispatch(setProfile(user))
             }
         })
-        dispatch(resetProfileLoading())
     }

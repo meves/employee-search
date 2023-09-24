@@ -1,3 +1,5 @@
+import { ResponseErrors } from "./libs/constatnts"
+
 export type SearchStatus = 'start' | 'found' | 'notfound'
 
 export type User = {
@@ -29,3 +31,8 @@ type Company = {
     catchPhrase: string
     bs: string
 }
+
+export type ResponseError = 
+    typeof ResponseErrors.NOT_CREDENTIALS |
+    typeof ResponseErrors.NOT_FOUND |
+    typeof ResponseErrors.SERVER_ERROR
